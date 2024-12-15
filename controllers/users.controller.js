@@ -33,11 +33,11 @@ const findAllUsers = async (_, res) => {
 
 const findUserById = async (req, res) => {
   try {
-    const result = await userService.findUserById(req.params.id);
+    const result = await userService.findUserById(parseInt(req.user.id));
 
     result.account_number = 9000 + result.id;
 
-    res.status(200).json({ data: result });
+    res.status(200).json({ data: new UserResponseDto(result) });
   } catch (error) {
     if (error.message === "user not found") {
       return res.status(404).json({ error: error.message });
@@ -72,12 +72,20 @@ const login = async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
 
-    const isValid = await userService.login(value);
+    const token = await userService.login(value);
 
     res.status(200).json({
-      data: isValid,
+      data: { token },
     });
   } catch (error) {
+    if (error.message === "404") {
+      return res.status(404).json({ message: "user does not exist" });
+    }
+
+    if (error.message === "401") {
+      res.status(401).json({ error: "invalid email or password" });
+    }
+
     res.status(error.statusCode || 500).json({ error: error.message });
   }
 };

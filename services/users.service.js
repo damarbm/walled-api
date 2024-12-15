@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 
 const usersRepository = require("../repositories/users.repository");
+const { generateAccessToken } = require("../utils/auth.util");
 
 const findAllUsers = () => {
   return usersRepository.findAllUsers();
@@ -22,24 +23,28 @@ const createUser = async (userData) => {
 
   const newUser = { ...userData, password: hashedPassword };
 
-  userData.balance = 50000;
-  user = await usersRepository.createUser(newUser);
-  return user;
+  newUser.balance = 50000;
+
+  return usersRepository.createUser(newUser);
 };
 
 const login = async (userData) => {
   const user = await usersRepository.findUserByEmail(userData.email);
 
   if (user.rows.length === 0) {
-    throw new Error("user does not exist");
+    throw new Error(404);
   }
 
-  const isValid = await bcrypt.compare(
+  const isPasswordMatched = await bcrypt.compare(
     userData.password,
     user.rows[0].password
   );
 
-  return isValid;
+  if (!isPasswordMatched) {
+    throw new Error(401);
+  }
+
+  return generateAccessToken({ id: user.rows[0].id, email: userData.email });
 };
 
 const addUserBalance = async (id, amount) => {
