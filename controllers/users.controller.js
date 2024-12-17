@@ -1,6 +1,7 @@
 const Joi = require("joi");
 const userService = require("../services/users.service");
 const UserResponseDto = require("../dto/user.dto");
+const UserBalanceResponseDto = require("../dto/userBalance.dto");
 
 const registerSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -25,7 +26,7 @@ const findAllUsers = async (_, res) => {
 
     result.map((item) => (item.account_number = 9000 + item.id));
 
-    res.status(200).json({ data: result });
+    res.status(200).json({ data: new UserResponseDto(result) });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });
   }
@@ -98,10 +99,13 @@ const addUserBalance = async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
 
-    const user = await userService.addUserBalance(req.params.id, value.amount);
+    const user = await userService.addUserBalance(
+      parseInt(req.user.id),
+      value.amount
+    );
 
-    res.status(201).json({
-      data: new UserResponseDto(user),
+    res.status(200).json({
+      data: new UserBalanceResponseDto(user),
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });

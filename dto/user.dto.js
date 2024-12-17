@@ -5,6 +5,7 @@ class UserResponseDto {
     this.email = user.email;
     this.avatar_url = user.avatar_url;
     this.balance = user.balance;
+    this.account_number = user.account_number;
   }
 }
 
