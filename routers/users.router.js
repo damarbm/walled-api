@@ -16,6 +16,4 @@ router.get("/profile", authenticateToken, usersController.findUserById);
 router.post("/auth/register", usersController.createUser);
 router.post("/auth/login", usersController.login);
 
-router.patch("/topup", authenticateToken, usersController.addUserBalance);
-
 module.exports = router;

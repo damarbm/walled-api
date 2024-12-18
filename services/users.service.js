@@ -47,18 +47,9 @@ const login = async (userData) => {
   return generateAccessToken({ id: user.rows[0].id, email: userData.email });
 };
 
-const addUserBalance = async (id, amount) => {
-  const user = await usersRepository.findUserById(id);
-
-  const newBalance = amount + parseInt(user.balance);
-
-  return usersRepository.addUserBalance(id, newBalance);
-};
-
 module.exports = {
   findAllUsers,
   findUserById,
   createUser,
-  addUserBalance,
   login,
 };

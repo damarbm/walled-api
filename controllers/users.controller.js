@@ -16,10 +16,6 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
-const topUpSchema = Joi.object({
-  amount: Joi.number().required(),
-});
-
 const findAllUsers = async (_, res) => {
   try {
     const result = await userService.findAllUsers();
@@ -36,7 +32,7 @@ const findUserById = async (req, res) => {
   try {
     const result = await userService.findUserById(parseInt(req.user.id));
 
-    result.account_number = 9000 + result.id;
+    result.account_number = 9000 + parseInt(result.id);
 
     res.status(200).json({ data: new UserResponseDto(result) });
   } catch (error) {
@@ -91,31 +87,9 @@ const login = async (req, res) => {
   }
 };
 
-const addUserBalance = async (req, res) => {
-  try {
-    const { error, value } = topUpSchema.validate(req.body);
-
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
-
-    const user = await userService.addUserBalance(
-      parseInt(req.user.id),
-      value.amount
-    );
-
-    res.status(200).json({
-      data: new UserBalanceResponseDto(user),
-    });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({ error: error.message });
-  }
-};
-
 module.exports = {
   findAllUsers,
   findUserById,
   createUser,
   login,
-  addUserBalance,
 };

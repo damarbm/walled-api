@@ -46,23 +46,9 @@ const createUser = async (user) => {
   }
 };
 
-const addUserBalance = async (id, newBalance) => {
-  try {
-    const result = await pool.query(
-      "UPDATE users SET balance = $2 WHERE id = $1 RETURNING *",
-      [id, newBalance]
-    );
-
-    return result.rows[0];
-  } catch (error) {
-    throw new Error("Something went wrong");
-  }
-};
-
 module.exports = {
   findAllUsers,
   findUserById,
   findUserByEmail,
   createUser,
-  addUserBalance,
 };
