@@ -1,14 +1,12 @@
 const Joi = require("joi");
 const userService = require("../services/users.service");
 const UserResponseDto = require("../dto/user.dto");
-const UserBalanceResponseDto = require("../dto/userBalance.dto");
 
 const registerSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   avatar_url: Joi.string().optional(),
   name: Joi.string().required(),
-  balance: Joi.number().required(),
 });
 
 const loginSchema = Joi.object({
@@ -51,6 +49,7 @@ const createUser = async (req, res) => {
     if (error) {
       return res.status(400).json({ error: error.message });
     }
+
     const user = await userService.createUser(value);
 
     res.status(201).json({
